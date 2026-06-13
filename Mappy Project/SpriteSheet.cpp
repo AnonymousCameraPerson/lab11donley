@@ -18,7 +18,7 @@ void Sprite::InitSprites(int width, int height)
 	//new if statement in draw function for jumping
 	maxFrame = 12;
 	curFrame = 0;
-	jumpFrame = 9;
+	jumpFrame = 8;
 	frameCount = 0;
 	frameDelay = 6;
 	frameWidth = 50;
@@ -36,7 +36,8 @@ void Sprite::UpdateSprites(int width, int height, int dir)
 	int oldy = y;
 
 	if(dir == 1){ //right key
-		animationDirection = 1; 
+		animationDirection = 1;
+		goingLeft = false;
 		x+=2; 
 		if (++frameCount > frameDelay)
 		{
@@ -46,6 +47,7 @@ void Sprite::UpdateSprites(int width, int height, int dir)
 		}
 	} else if (dir == 0){ //left key
 		animationDirection = 0;
+		goingLeft = true;
 		x-=2; 
 		if (++frameCount > frameDelay)
 		{
@@ -59,13 +61,17 @@ void Sprite::UpdateSprites(int width, int height, int dir)
 		animationDirection = 4;
 		isJumping = true;
 		//curFrame++;
-		if (++curFrame > maxFrame)
-          	curFrame = 1;
-
+		if (++frameCount > frameDelay) {
+			frameCount = 0;
+			if (++jumpFrame > maxFrame-1)
+				jumpFrame = 8;
+		}
+		
 	}
 	else { //represent that they hit the space bar and that mean direction = 0
+		goingLeft = false;
 		animationDirection = dir;
-		isJumping = false;
+		//isJumping = false;
 	}
 	//check for collided with foreground tiles
 	if (animationDirection==0)
@@ -97,7 +103,8 @@ void Sprite::DrawSprites(int xoffset, int yoffset)
 {
 	int fx = (curFrame % animationColumns) * frameWidth;
 	int fy = (curFrame / animationColumns) * frameHeight;
-	
+	int jumpx = (jumpFrame % animationColumns) * frameWidth;
+	int jumpy = (jumpFrame / animationColumns) * frameHeight;
 	
 	if (animationDirection == 1) {
 		al_draw_bitmap_region(image, fx, fy, frameWidth, frameHeight, x - xoffset, y - yoffset, 0);
@@ -110,9 +117,14 @@ void Sprite::DrawSprites(int xoffset, int yoffset)
 
 	}
 	else if (animationDirection == 4) {
-		al_draw_bitmap_region(image, fx, fy, frameWidth, frameHeight, x - xoffset, y - yoffset, 0);
+		if (goingLeft) {
+			al_draw_bitmap_region(image, jumpx, jumpy, frameWidth, frameHeight, x - xoffset, y - yoffset, ALLEGRO_FLIP_HORIZONTAL);
+		}
+		else {
+			al_draw_bitmap_region(image, jumpx, jumpy, frameWidth, frameHeight, x - xoffset, y - yoffset, 0);
+		}
 	}
-	
+	//draw when he is jumping. Left and Right jumping
 	//else {
 	//	al_draw_bitmap_region(image, frameWidth, frameHeight, maxFrame,)
 	//}
@@ -132,6 +144,7 @@ int Sprite::jumping(int jump, const int JUMPIT)
 	{
 		y -= jump/3; 
 		jump--;
+		UpdateSprites(900, 480, 4);
 	}
 
 	if (jump<0) 
