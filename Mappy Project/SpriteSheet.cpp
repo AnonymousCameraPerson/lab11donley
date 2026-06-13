@@ -13,7 +13,9 @@ void Sprite::InitSprites(int width, int height)
 	x = 80;
 	y = -10;
 
-
+	//need to check if dir == something for jumping
+	//maxFrame = 12
+	//new if statement in draw function for jumping
 	maxFrame = 12;
 	curFrame = 0;
 	jumpFrame = 9;
@@ -43,7 +45,7 @@ void Sprite::UpdateSprites(int width, int height, int dir)
 				curFrame=1;
 		}
 	} else if (dir == 0){ //left key
-		animationDirection = 0; 
+		animationDirection = 0;
 		x-=2; 
 		if (++frameCount > frameDelay)
 		{
@@ -51,9 +53,20 @@ void Sprite::UpdateSprites(int width, int height, int dir)
 			if (++curFrame > maxFrame-5)
 				curFrame=1;
 		}
-	}else //represent that they hit the space bar and that mean direction = 0
-		animationDirection = dir;
 
+	} else if (dir == 4) { //spacebar
+		//jumpFrame = 8;
+		animationDirection = 4;
+		isJumping = true;
+		//curFrame++;
+		if (++curFrame > maxFrame)
+          	curFrame = 1;
+
+	}
+	else { //represent that they hit the space bar and that mean direction = 0
+		animationDirection = dir;
+		isJumping = false;
+	}
 	//check for collided with foreground tiles
 	if (animationDirection==0)
 	{ 
@@ -93,9 +106,11 @@ void Sprite::DrawSprites(int xoffset, int yoffset)
 		al_draw_bitmap_region(image, fx, fy, frameWidth, frameHeight, x - xoffset, y - yoffset, ALLEGRO_FLIP_HORIZONTAL);
 	}
 	else if (animationDirection == 2) {
-		//player is jumping
 		al_draw_bitmap_region(image, 0, 0, frameWidth, frameHeight, x - xoffset, y - yoffset, 0);
 
+	}
+	else if (animationDirection == 4) {
+		al_draw_bitmap_region(image, fx, fy, frameWidth, frameHeight, x - xoffset, y - yoffset, 0);
 	}
 	
 	//else {
@@ -105,17 +120,18 @@ void Sprite::DrawSprites(int xoffset, int yoffset)
 
 int Sprite::jumping(int jump, const int JUMPIT)
 {
+	//curFrame++;
 	//handle jumping
 	if (jump==JUMPIT) { 
 
 		if (!collided(x + frameWidth/2, y + frameHeight + 5))
 			jump = 0; 
+		
 	}
 	else
 	{
 		y -= jump/3; 
-		jump--; 
-		curFrame=10;
+		jump--;
 	}
 
 	if (jump<0) 
@@ -126,6 +142,7 @@ int Sprite::jumping(int jump, const int JUMPIT)
 			while (collided(x + frameWidth/2,y + frameHeight))
 			{
 				y -= 3;
+
 			}
 		} 
 	}
