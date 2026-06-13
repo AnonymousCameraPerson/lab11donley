@@ -79,6 +79,7 @@ int main(void)
 		if(ev.type == ALLEGRO_EVENT_TIMER)
 		{
 			render = true;
+			MapUpdateAnims();
 			if (keys[UP])
 				;
 			else if (keys[DOWN])
