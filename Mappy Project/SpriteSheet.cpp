@@ -1,5 +1,6 @@
 #include "SpriteSheet.h"
 
+
 Sprite::Sprite()
 {
 	image=NULL;
@@ -11,7 +12,7 @@ Sprite::~Sprite()
 void Sprite::InitSprites(int width, int height)
 {
 	x = 80;
-	y = -10;
+	y = 35;
 
 	//need to check if dir == something for jumping
 	//maxFrame = 12
@@ -19,6 +20,7 @@ void Sprite::InitSprites(int width, int height)
 	maxFrame = 12;
 	curFrame = 0;
 	jumpFrame = 8;
+	jumpFrameDelay = 6;
 	frameCount = 0;
 	frameDelay = 6;
 	frameWidth = 50;
@@ -61,7 +63,7 @@ void Sprite::UpdateSprites(int width, int height, int dir)
 		animationDirection = 4;
 		isJumping = true;
 		//curFrame++;
-		if (++frameCount > frameDelay) {
+		if (++frameCount > jumpFrameDelay) {
 			frameCount = 0;
 			if (++jumpFrame > maxFrame-1)
 				jumpFrame = 8;
@@ -89,10 +91,17 @@ void Sprite::UpdateSprites(int width, int height, int dir)
 			y= oldy;
 		}
 	}
+	else if (animationDirection == 4) {
+		if (collided(x, y - frameHeight)) {
+   			x = oldx;
+			y = oldy;
+		}
+	}
 }
 
 bool Sprite::CollisionEndBlock()
 {
+
 	if (endValue(x + frameWidth/2, y + frameHeight + 5))
 		return true;
 	else
@@ -142,7 +151,14 @@ int Sprite::jumping(int jump, const int JUMPIT)
 	}
 	else
 	{
-		y -= jump/3; 
+		if ((collideWithCeiling(x+frameWidth/2, y - (jump / 3)) || (collideWithCeiling(x + frameWidth / 2, y - (jump / 3)) || (collideWithCeiling(x + frameWidth/2, y - (jump / 3))))))
+		{
+			jump--;
+		}
+		else {
+			y -= jump / 3;
+		}
+
 		jump--;
 		UpdateSprites(900, 480, 4);
 	}

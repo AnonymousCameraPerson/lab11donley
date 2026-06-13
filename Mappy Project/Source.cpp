@@ -9,6 +9,7 @@
 using namespace std;
 
 int collided(int x, int y);  //Tile Collision
+int collideWithCeiling(int x, int y); //Collision with ceiling
 bool endValue( int x, int y ); //End Block with the User Value = 8
 int main(void)
 {
@@ -200,9 +201,21 @@ int main(void)
 
 int collided(int x, int y)
 {
+	if (x < 0 || y < 0 || x >= mapwidth * mapblockwidth || y >= mapheight * mapblockheight)
+		return 0;
+
 	BLKSTR *blockdata;
 	blockdata = MapGetBlock(x/mapblockwidth, y/mapblockheight);
-	return blockdata->tl;
+	return (blockdata->tl || blockdata->tr);
+}
+int collideWithCeiling(int x, int y) {
+
+	if (x < 0 || y < 0 || x >= mapwidth * mapblockwidth || y >= mapheight * mapblockheight)
+		return 0;
+
+	BLKSTR* blockdata;
+	blockdata = MapGetBlock(x / mapblockwidth, y / mapblockheight);
+	return (blockdata->bl || blockdata->br);
 }
 
 bool endValue( int x, int y )

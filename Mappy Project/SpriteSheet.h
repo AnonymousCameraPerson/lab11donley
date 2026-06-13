@@ -8,6 +8,7 @@ class Sprite
 {
 	friend int collided(int x, int y);
 	friend bool endValue( int x, int y );
+	friend int collideWithCeiling(int x, int y);
 public:
 	Sprite();
 	~Sprite();
@@ -38,5 +39,6 @@ private:
 	int animationDirection;
 	bool isJumping;
 	bool goingLeft;
+	int jumpFrameDelay;
 	ALLEGRO_BITMAP *image;
 };
