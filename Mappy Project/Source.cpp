@@ -93,7 +93,9 @@ int main(void)
 				player.UpdateSprites(WIDTH,HEIGHT,2);
 			if (player.CollisionEndBlock()) {
 				hasWon = true;
-				al_draw_text(font, al_map_rgb(255, 255, 255), WIDTH / 4, 150, 0, "You won!");
+				double current_seconds = al_get_time();
+				int not_double_secs = (int)current_seconds;
+				al_draw_textf(font, al_map_rgb(255, 255, 255), WIDTH / 9, 150, 0, "Done in %d seconds!", not_double_secs);
 				cout << "You won!\n";
 			}
 			render = true;
@@ -184,7 +186,7 @@ int main(void)
 			}
 		}
 	}
-	al_rest(5.0);
+	al_rest(7.0);
 	MapFreeMem();
 	al_destroy_font(font);
 	al_destroy_event_queue(event_queue);
