@@ -1,6 +1,8 @@
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
 #include "SpriteSheet.h"
 #include "mappy_A5.h"
 #include <iostream>
@@ -10,6 +12,7 @@ int collided(int x, int y);  //Tile Collision
 bool endValue( int x, int y ); //End Block with the User Value = 8
 int main(void)
 {
+	bool hasWon = false;
 	const int WIDTH = 900;
 	const int HEIGHT = 480;
 	bool keys[] = {false, false, false, false, false};
@@ -28,6 +31,7 @@ int main(void)
 	ALLEGRO_DISPLAY *display = NULL;
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 	ALLEGRO_TIMER *timer;
+	ALLEGRO_FONT* font = NULL;
 
 	//program init
 	if(!al_init())										//initialize Allegro
@@ -42,6 +46,8 @@ int main(void)
 	al_install_keyboard();
 	al_init_image_addon();
 	al_init_primitives_addon();
+	al_init_font_addon();
+	al_init_ttf_addon();
 
 	player.InitSprites(WIDTH,HEIGHT);
 
@@ -52,6 +58,7 @@ int main(void)
 
 	event_queue = al_create_event_queue();
 	timer = al_create_timer(1.0 / 60);
+	font = al_load_ttf_font("college.ttf", 48, 0);
 
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
@@ -84,8 +91,11 @@ int main(void)
 				player.UpdateSprites(WIDTH, HEIGHT, 4);
 			else
 				player.UpdateSprites(WIDTH,HEIGHT,2);
-			if (player.CollisionEndBlock())
-				cout<<"Hit an End Block\n";
+			if (player.CollisionEndBlock()) {
+				hasWon = true;
+				al_draw_text(font, al_map_rgb(255, 255, 255), WIDTH / 4, 150, 0, "You won!");
+				cout << "You won!\n";
+			}
 			render = true;
 
 		}
@@ -169,9 +179,14 @@ int main(void)
 			player.DrawSprites(xOff, yOff);
 			al_flip_display();
 			al_clear_to_color(al_map_rgb(0,0,0));
+			if (hasWon) {
+				break;
+			}
 		}
 	}
+	al_rest(5.0);
 	MapFreeMem();
+	al_destroy_font(font);
 	al_destroy_event_queue(event_queue);
 	al_destroy_display(display);						//destroy our display object
 
@@ -193,9 +208,14 @@ bool endValue( int x, int y )
 	BLKSTR* data;
 	data = MapGetBlock( x/mapblockwidth, y/mapblockheight );
 
-	if( data->user1 == 8 )
-	{
+	//if( data->user1 == 8 )
+	//{
+	//	return true;
+	//}
+	if (data->user1 == 9) {
 		return true;
-	}else
+	}
+	else {
 		return false;
+	}
 }
