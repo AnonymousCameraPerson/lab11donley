@@ -98,7 +98,7 @@ int main(void)
 				double current_seconds = al_get_time();
 				int not_double_secs = (int)current_seconds;
 				al_draw_textf(font, al_map_rgb(255, 255, 255), WIDTH / 9, 150, 0, "Done in %d seconds!", not_double_secs);
-				cout << "You won!\n";
+				//cout << "You won!\n";
 			}
 			render = true;
 
